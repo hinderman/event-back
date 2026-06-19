@@ -9,7 +9,7 @@ on:
 env:
   IMAGE_NAME: event-dev-back
   AZURE_RESOURCE_GROUP: event-dev
-  AZURE_CONTAINER_APP: event-dev-back-capp
+  AZURE_CONTAINER_APP: event-dev-back-app
 
 permissions:
   contents: read
