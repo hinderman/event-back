@@ -6,6 +6,8 @@ public interface IAuthTokenStore
 {
     string IssueToken(AuthenticatedUserSession session);
 
+    bool TryGetSession(string token, out AuthenticatedUserSession session);
+
     bool RevokeToken(string token);
 }
 

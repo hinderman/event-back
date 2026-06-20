@@ -17,6 +17,11 @@ internal sealed class InMemoryAuthTokenStore : IAuthTokenStore
         return token;
     }
 
+    public bool TryGetSession(string token, out AuthenticatedUserSession session)
+    {
+        return sessions.TryGetValue(token, out session!);
+    }
+
     public bool RevokeToken(string token)
     {
         return sessions.TryRemove(token, out _);

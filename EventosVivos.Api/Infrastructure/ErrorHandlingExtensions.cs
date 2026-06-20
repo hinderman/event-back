@@ -42,6 +42,10 @@ public static class ErrorHandlingExtensions
                 StatusCodes.Status401Unauthorized,
                 "Unauthorized",
                 unauthorized.Message),
+            UnauthorizedAccessException unauthorized => (
+                StatusCodes.Status401Unauthorized,
+                "Unauthorized",
+                unauthorized.Message),
             ConflictException conflict => (
                 StatusCodes.Status409Conflict,
                 "Conflict",

@@ -1,13 +1,32 @@
-using EventosVivos.Api.Endpoints;
+using EventosVivos.Api.Endpoints.Auth;
+using EventosVivos.Api.Endpoints.Events;
+using EventosVivos.Api.Endpoints.Health;
+using EventosVivos.Api.Endpoints.Reports;
+using EventosVivos.Api.Endpoints.Reservations;
 using EventosVivos.Api.Infrastructure;
 using EventosVivos.Application.Configuration;
+using EventosVivos.Domain.Catalogs;
 using EventosVivos.Infrastructure.Configuration;
+using Microsoft.AspNetCore.Authentication;
 
 const string CorsPolicyName = "AngularClient";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddAuthentication(OpaqueTokenAuthenticationHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, OpaqueTokenAuthenticationHandler>(
+        OpaqueTokenAuthenticationHandler.SchemeName,
+        options => { });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuthPolicies.Administrator, policy =>
+        policy.RequireRole(UserType.AdministratorCode));
+    options.AddPolicy(AuthPolicies.Buyer, policy =>
+        policy.RequireRole(UserType.BuyerCode));
+    options.AddPolicy(AuthPolicies.AdministratorOrBuyer, policy =>
+        policy.RequireRole(UserType.AdministratorCode, UserType.BuyerCode));
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>
@@ -33,6 +52,8 @@ var app = builder.Build();
 
 app.UseApiExceptionHandler();
 app.UseCors(CorsPolicyName);
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/", () => Results.Redirect("/api/health"));
 app.MapHealthEndpoints();
